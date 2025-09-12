@@ -24,7 +24,7 @@ Paged Attention
 
 多头潜在注意力机制 (MLA) （Deepseek v3）
 
-### 位置编码
+### [位置编码](/大模型基础知识/位置编码.md)
 
 SinCos
 

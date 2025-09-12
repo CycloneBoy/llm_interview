@@ -3,6 +3,8 @@
 
 # 1.attention
 
+![1757662019315](image/1757662019315.png)
+
 ### 1.Attention
 
 #### **1.1 讲讲对Attention的理解？**
@@ -264,6 +266,10 @@ GQA介于MHA和MQA之间。GQA 综合 MHA 和 MQA ，既不损失太多性能，
 
 ![](image/image_25Hri7grcr.png)
 
+
+**参考链接**
+[理解Attention:从起源到MHA,MQA和GQA](https://zhuanlan.zhihu.com/p/686149289)
+
 ### 5.Flash Attention&#x20;
 
 论文名称：[FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness](https://arxiv.org/abs/2205.14135 "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness")
@@ -355,6 +361,9 @@ RNN 跟 transformer **同：语义空间的转换 + 关注点**
 
 - 多头保证了transformer可以注意到不同子空间的信息，捕捉到更加丰富的特征信息。可以类比CNN中同时使用**多个滤波器**的作用，直观上讲，多头的注意力**有助于网络捕捉到更丰富的特征/信息。**
 
+我们希望多个头能够在训练中学会注意到不同的内容。例如在翻译任务里，一些attention head可以关注语法特征，另一些attention head可以关注单词特性。这样模型就可以从不同角度来分析和理解输入信息，获得更好的效果了。
+
+
 **Transformer为什么Q和K使用不同的权重矩阵生成，为何不能使用同一个值进行自身的点乘？** （注意和第一个问题的区别）
 
 - 使用Q/K/V不相同可以保证在不同空间进行投影，增强了表达能力，提高了泛化能力。
@@ -367,8 +376,18 @@ RNN 跟 transformer **同：语义空间的转换 + 关注点**
 
 **为什么在进行softmax之前需要对attention进行scaled（为什么除以dk的平方根）**，并使用公式推导进行讲解
 
+
 - 这取决于softmax函数的特性，如果softmax内计算的数数量级太大，会输出近似one-hot编码的形式，导致梯度消失的问题，所以需要scale
 - 那么至于为什么需要用维度开根号，假设向量q，k满足各分量独立同分布，均值为0，方差为1，那么qk点积均值为0，方差为dk，从统计学计算，若果让qk点积的方差控制在1，需要将其除以dk的平方根，是的softmax更加平滑
+
+![1757662351027](image/attention/1757662351027.png)
+
+简单来说，就是需要压缩softmax输入值，以免输入值过大，进入了softmax的饱和区，导致梯度值太小而难以训练
+
+
+苏剑林的博客中也有详细分析，并提到如果不对attention值进行scaling，也可以通过在参数初始化是将方差除以一个 
+ ，同样可以起到预防softmax饱和的效果。类似地，通过normalization也可以做到类似的效果。不过实现上在attention里做scaling还是比较稳定高效的。
+
 
 **在计算attention score的时候如何对padding做mask操作？**
 
@@ -448,6 +467,66 @@ $$
 
 ### 7. Sliding Window Attention (SWA)
 
-### 8. Paged Attention
+> 来源 Mistral 7B https://arxiv.org/pdf/2310.06825
+
+![1757653681317](image/1757653681317.png)
+
+
+Sliding Window Attention. SWA exploits the stacked layers of a transformer to attend information beyond the window size W. The hidden
+state in position i of the layer k, hi
+, attends to all hidden states from
+the previous layer with positions between i − W and i. Recursively,
+hi can access tokens from the input layer at a distance of up to W × k
+tokens, as illustrated in Figure 1. At the last layer, using a window size
+of W = 4096, we have a theoretical attention span of approximately
+131K tokens. In practice, for a sequence length of 16K and W = 4096,
+changes made to FlashAttention [11] and xFormers [18] yield a 2x
+speed improvement over a vanilla attention baseline.
+
+SWA实际上是一种sparse attention，而sparse attention也有许多工作做了深入探索。
+
+**和KV Cache的配合实现**
+
+在不使用sliding window的情况下，随着自回归推理的进行，KV Cache是只增不减的。
+
+而在使用SWA的情况下，超出窗口长度的kv就可以不用再缓存了，因此使用一个轮转替换的策略。
+
+比如窗口大小 W=4 ，则当第5个token需要缓存是，直接替换掉第1个token，这样就可以保持kv缓存有一个最大值（为窗口大小），而不会无限增长。
+
+![1757660677243](image/1757660677243.png)
+
+这样便于我们估计硬件设备所能支持的throughput，也不会因为少量超长的case而造成堵塞，在工程上有利于提高硬件利用率，降低成本。
+
+![1757653816761](image/1757653816761.png)
+
+![1757653830295](image/1757653830295.png)
+
+**参考链接**
+
+[稀疏注意力计算:sliding window attention](https://zhuanlan.zhihu.com/p/687349083)
+
+### 8. Paged Attention (vllm)
 
 ### 9.多头潜在注意力机制 (MLA) （Deepseek v3）
+
+### 10. 长上下文
+
+小模型（比如2B、7B）可以硬刚，支持到16k或者32k长度，但是对于更大的长度（200k），或者更大的模型（34B、70B+），这么做就性价比就比较低了。
+
+现在一般的做法是分两阶段，第一阶段用2k或者4k训练一个基础模型，等到模型把文本内容和短位置关系都学好之后，再来用相比第一阶段小的数据量优化在长上下文情况下的效果。
+
+而第二阶段在如何用更少的训练量达到更好的效果这件事上，又有很多工作。
+
+**小结**
+
+较短的预训练模型（2k、4k）应用在长上下文会因为训练和推理的两个不一致导致效果下降
+
+推理时用到了没训练过的位置编码
+推理时注意力机制所处理的token数量远超训练时的数量，导致注意力机制的崩坏
+这两个问题分别可以从位置编码和attention score的放缩来缓解。
+
+线性插值PI、NTK插值、分部NTK插值都可以缓解第一个问题，logn和YaRN则把第二个问题纳入的考虑。目前这些方法在实际应用中也有很多变体，包括超参的修改，函数的重定义等
+
+**参考链接**
+
+[LLM长上下文的问题](https://zhuanlan.zhihu.com/p/684924585)
