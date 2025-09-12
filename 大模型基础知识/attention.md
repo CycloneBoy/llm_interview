@@ -1,5 +1,3 @@
-[toc]
-
 # 1.attention
 
 ![1757662019315](image/1757662019315.png)
@@ -499,6 +497,7 @@ SWA实际上是一种sparse attention，而sparse attention也有许多工作做
 [稀疏注意力计算:sliding window attention](https://zhuanlan.zhihu.com/p/687349083)
 
 ### 8. Paged Attention (vllm)
+
 > vllm paper: https://arxiv.org/abs/2309.06180
 
 > vllm video: [Fast LLM Serving with vLLM and PagedAttention](https://www.youtube.com/watch?v=5ZlavKF_98U)
@@ -549,7 +548,7 @@ SWA实际上是一种sparse attention，而sparse attention也有许多工作做
 
 浅色块：观察图中的浅色块，它是prefill阶段prompt的KV cache，是无论如何都会被使用的空间，它不存在浪费。
 
-中色块：观察图中的中色块，它是decode阶段的KV cache，其中`<eos>`表示序列生成的截止符。虽然这些中色块最终都会被我们用上，但是在decode阶段一个个token生成时，我们并不能预知哪些块会被最终用上。例如对于prompt2，当你生成when的时候，你无法知道下一个会生成`<eos>`，还是会生成别的词。所以这些中色块都是一种“潜在的浪费”，我们称中色块的部分为预留碎片（reservation fragment）。
+中色块：观察图中的中色块，它是decode阶段的KV cache，其中 `<eos>`表示序列生成的截止符。虽然这些中色块最终都会被我们用上，但是在decode阶段一个个token生成时，我们并不能预知哪些块会被最终用上。例如对于prompt2，当你生成when的时候，你无法知道下一个会生成 `<eos>`，还是会生成别的词。所以这些中色块都是一种“潜在的浪费”，我们称中色块的部分为预留碎片（reservation fragment）。
 
 深色块：观察图中的深色块，它也是decode阶段的KV cache，但直到序列生成完毕，它都没有被用上。由于这些深色块是预留的KV cache的一部分，所以我们称其为内部碎片（internal fragment）。
 
@@ -785,6 +784,49 @@ vLLM怎么做：
 [图解大模型计算加速系列之：vLLM核心技术PagedAttention原理](https://blog.csdn.net/qq_27590277/article/details/137262274)
 
 ### 9.多头潜在注意力机制 (MLA) （Deepseek v3）
+
+![1757679957560](image/attention/1757679957560.png)
+![1757679134493](image/attention/1757679134493.png)
+
+Multi-head Latent Attention (MLA) 是一种将 多头注意力机制 与 潜在表示学习 相结合的高效注意力模型。通过引入潜在空间（Latent Space），MLA 能够在捕捉输入数据复杂依赖关系的同时，大幅降低计算成本，减少了推理过程中的键值（KV）缓存，提升建模能力和鲁棒性。
+
+**与标准多头注意力的对比**
+
+性能保持：尽管MLA通过低秩压缩减少了KV缓存和激活内存，但它仍然能够保持与标准多头注意力（MHA）相当的性能。
+
+推理效率提升：在推理过程中，MLA只需要缓存压缩后的键和值，这显著减少了内存占用，使得模型能够处理更长的上下文长度。
+
+**旋转位置嵌入（RoPE）**
+
+位置信息处理：MLA架构还结合了旋转位置嵌入（RoPE），有效处理了长序列中的位置依赖问题。
+
+作用：RoPE通过旋转操作将位置信息嵌入到键和查询中，使得模型能够更好地捕捉长距离依赖关系。
+
+**MLA 的优势**
+
+计算效率提升：通过在低维潜在空间中执行注意力计算，复杂度由
+ 降至
+
+语义表达增强：潜在空间提取输入数据的抽象语义特征，提升模型对全局依赖的捕捉能力。
+
+模块化设计：MLA 可与卷积网络、循环网络等深度学习模块无缝结合，适用于自然语言处理、计算机视觉等多种任务。
+
+**MLA 的变体与扩展**
+
+层次化 MLA：通过逐层构建潜在空间，形成层次化注意力机制，提升全局建模能力。
+
+动态潜在空间：根据输入特性动态调整潜在空间的维度或结构，进一步优化模型性能。
+
+结合稀疏注意力：与局部或稀疏注意力相结合，在长序列任务中进一步降低计算开销。
+
+综上所述，MLA架构通过低秩压缩技术减少了KV缓存和激活内存，同时结合RoPE处理长序列位置信息，显著提升了模型的推理效率，同时保持了与标准多头注意力相当的性能
+
+**参考**
+
+[Multi-head Latent Attention多头潜在注意力机制](https://zhuanlan.zhihu.com/p/687045306)
+[Multi-Head Latent Attention (MLA) 详细介绍](https://zhuanlan.zhihu.com/p/15153745590)
+
+[MLA——一文通透DeepSeek V2中的多头潜在注意力MLA](https://blog.csdn.net/v_JULY_v/article/details/141535986)
 
 ### 10. 长上下文
 
