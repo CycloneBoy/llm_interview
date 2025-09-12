@@ -2,10 +2,9 @@
 
 # 大模型基础知识
 
-
 ## Transformer
 
-### attention
+### [attention](/大模型基础知识/attention.md)
 
 Self-attention
 
@@ -23,6 +22,8 @@ Flash Attention v2
 
 Paged Attention
 
+多头潜在注意力机制 (MLA) （Deepseek v3）
+
 ### 位置编码
 
 SinCos
@@ -30,6 +31,10 @@ SinCos
 rotary
 
 Alibi
+
+长度外推
+
+Yarn
 
 ### tokenize
 
