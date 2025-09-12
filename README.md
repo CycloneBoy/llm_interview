@@ -9,7 +9,7 @@
 
 ## 在线阅读
 
-在线阅读链接：[LLMs Interview Note](http://cycloneboy.github.io/llm_interview)
+在线阅读链接：[LLMs Interview Note](https://cycloneboy.github.io/llm_interview/)
 
 
 ## 注意：
