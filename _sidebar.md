@@ -1,13 +1,3 @@
-<!-- index.html -->
-
-<script>
-  window.$docsify = {
-    loadSidebar: true,
-    subMaxLevel: 2
-  }
-</script>
-<script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
-
 * [Home](/)
 * [大模型基础知识](/大模型基础知识/)
     * [attention](/大模型基础知识/attention.md "attention")
