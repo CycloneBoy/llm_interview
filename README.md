@@ -32,7 +32,7 @@
         * [8. Paged Attention (vllm)](/大模型基础知识/attention.md?id=_8-paged-attention-vllm )
         * [9.多头潜在注意力机制 (MLA) （Deepseek v3）](/大模型基础知识/attention.md?id=_9多头潜在注意力机制-mla-（deepseek-v3） )
         * [10. 长上下文](/大模型基础知识/attention.md?id=_10-长上下文)
-    * [位置编码](/大模型基础知识/位置编码.md "位置编码")
+    * [positional_encoding](/大模型基础知识/positional_encoding.md "位置编码")
 * [大模型微调](/大模型微调/)
 * [分布式训练](/分布式训练/)
 * [强化学习](/强化学习/)

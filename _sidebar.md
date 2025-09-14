@@ -1,7 +1,7 @@
 * [Home](/)
 * [大模型基础知识](/大模型基础知识/)
     * [attention](/大模型基础知识/attention.md "attention")
-    * [位置编码](/大模型基础知识/位置编码.md "位置编码")
+    * [positional_encoding](/大模型基础知识/positional_encoding.md "位置编码")
 * [大模型微调](/大模型微调/)
 * [分布式训练](/分布式训练/)
 * [强化学习](/强化学习/)
