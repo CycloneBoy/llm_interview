@@ -2,9 +2,9 @@
 
 ![1757662019315](image/1757662019315.png)
 
-### 1.Attention
+## 1.Attention
 
-#### **1.1 讲讲对Attention的理解？**
+### **1.1 讲讲对Attention的理解？**
 
 Attention机制是一种在处理时序相关问题的时候常用的技术，主要用于处理序列数据。
 
@@ -34,7 +34,7 @@ $$
 Attention(Q,K,V)=softmax(\frac{QK^T}{\sqrt{d_k}})V
 $$
 
-#### **1.3 Attention机制和传统的Seq2Seq模型有什么区别？**
+### **1.3 Attention机制和传统的Seq2Seq模型有什么区别？**
 
 Seq2Seq模型是一种基于编码器-解码器结构的模型，主要用于处理序列到序列的任务，例如机器翻译、语音识别等。
 
@@ -42,7 +42,7 @@ Seq2Seq模型是一种基于编码器-解码器结构的模型，主要用于处
 
 而Attention机制则允许解码器在生成每个输出时，根据输入序列的不同部分给予不同的注意力，从而使得模型更好地关注到输入序列中的重要信息。
 
-#### **1.4 self-attention 和 target-attention的区别？**
+### **1.4 self-attention 和 target-attention的区别？**
 
 self-attention是指在序列数据中，**将当前位置与其他位置之间的关系建模**。它通过计算每个位置与其他所有位置之间的相关性得分，从而为每个位置分配一个权重。这使得模型能够根据输入序列的不同部分的重要性，自适应地选择要关注的信息。
 
@@ -50,11 +50,11 @@ target-attention则是指将**注意力机制应用于目标（或查询）和�
 
 因此，**自注意力主要关注序列内部的关系，而目标注意力则关注目标与其他对象之间的关系**。这两种注意力机制在不同的上下文中起着重要的作用，帮助模型有效地处理序列数据和相关任务。
 
-#### **1.5 在常规attention中，一般有k=v，那self-attention 可以吗?**
+### **1.5 在常规attention中，一般有k=v，那self-attention 可以吗?**
 
 self-attention实际只是attention中的一种特殊情况，因此k=v是没有问题的，也即K，V参数矩阵相同。实际上，在Transformer模型中，Self-Attention的典型实现就是k等于v的情况。Transformer中的Self-Attention被称为"Scaled Dot-Product Attention"，其中通过将词向量进行线性变换来得到Q、K、V，并且这三者是相等的。
 
-#### **1.6 目前主流的attention方法有哪些？**
+### **1.6 目前主流的attention方法有哪些？**
 
 讲自己熟悉的就可：
 
@@ -63,11 +63,11 @@ self-attention实际只是attention中的一种特殊情况，因此k=v是没有
 - **Relative Positional Encoding**: 传统的Self-Attention机制在处理序列时并未直接考虑位置信息，而相对位置编码引入了位置信息，使得模型能够更好地处理序列中不同位置之间的关系。
 - **Transformer-XL**: 一种改进的Transformer模型，通过使用循环机制来扩展Self-Attention的上下文窗口，从而处理更长的序列依赖性。
 
-#### **1.7 self-attention 在计算的过程中，如何对padding位做mask？**
+### **1.7 self-attention 在计算的过程中，如何对padding位做mask？**
 
 在 Attention 机制中，同样需要忽略 padding 部分的影响，这里以transformer encoder中的self-attention为例：self-attention中，Q和K在点积之后，需要先经过mask再进行softmax，因此，**对于要屏蔽的部分，mask之后的输出需要为负无穷**，这样softmax之后输出才为0。
 
-#### **1.8 深度学习中attention与全连接层的区别何在？**
+### **1.8 深度学习中attention与全连接层的区别何在？**
 
 这是个非常有意思的问题，要回答这个问题，我们必须重新定义一下Attention。
 
@@ -77,14 +77,14 @@ Transformer Paper里重新用QKV定义了Attention。所谓的QKV就是Query，K
 
 最后来一个比较形象的比喻吧。如果一个神经网络的任务是从一堆白色小球中找到一个略微发灰的，那么全连接就是在里面随便乱抓然后凭记忆和感觉找，而attention则是左手拿一个白色小球，右手从袋子里一个一个抓出来，两两对比颜色，你左手抓的那个白色小球就是Query。
 
-#### **1.9 self-attention mask 是如何进行的？**
+### **1.9 self-attention mask 是如何进行的？**
 
 Self-Attention Masked只发生在Decoder操作中，在Decoder中，我们的预测是一个一个进行的，即输入一个token，输出下一个token
 
 ![1757649274269](image/1757649274269.png)
 ![1757649282176](image/1757649282176.png)
 
-### 2.Transformer
+## 2.Transformer
 
 **2.1 transformer中multi-head attention中每个head为什么要进行降维？**
 
@@ -108,7 +108,7 @@ Transformer在Encoder和Decoder中都进行了权重共享。
 
 在Decoder中，除了和Encoder相同的权重共享方式外，还存在另一种特殊的权重共享：**Decoder的自注意力层和Encoder的自注意力层之间也进行了共享**。这种共享方式被称为"masked self-attention"，因为在解码过程中，当前位置的注意力不能关注到未来的位置（后续位置），以避免信息泄漏。通过这种共享方式，Decoder可以利用Encoder的表示来理解输入序列并生成输出序列。权重共享的好处是大大减少了模型的参数数量，使得Transformer可以更有效地训练，并且更容易进行推理。此外，共享参数还有助于加快训练速度和提高模型的泛化能力，因为模型可以在不同位置共享并学习通用的特征表示。
 
-#### **2.3 transformer的点积模型做缩放的原因是什么？**
+### **2.3 transformer的点积模型做缩放的原因是什么？**
 
 使用缩放的原因是为了控制注意力权重的尺度，以避免在计算过程中出现梯度爆炸的问题。
 
@@ -119,9 +119,9 @@ Attention的计算是在内积之后进行softmax，主要涉及的运算是$e^{
 1. 像NTK参数化那样，在内积之后除以 $\sqrt{d}$，使q⋅k的方差变为1，对应$e^3,e^{−3}$都不至于过大过小，这样softmax之后也不至于变成one hot而梯度消失了，这也是常规的Transformer如BERT里边的Self Attention的做法
 2. 另外就是不除以 $\sqrt{d}$，但是初始化q,k的全连接层的时候，其初始化方差要多除以一个d，这同样能使得使q⋅k的初始方差变为1，T5采用了这样的做法。
 
-### 3.BERT
+## 3.BERT
 
-#### **3.1 BERT用字粒度和词粒度的优缺点有哪些？**
+### **3.1 BERT用字粒度和词粒度的优缺点有哪些？**
 
 BERT可以使用字粒度（character-level）和词粒度（word-level）两种方式来进行文本表示，它们各自有优缺点：
 
@@ -135,11 +135,11 @@ BERT可以使用字粒度（character-level）和词粒度（word-level）两种
 - **优点**：计算效率高：使用词粒度可以大大减少输入序列的长度，从而降低模型的计算复杂度和内存消耗。学习到更加稳定的词级别表示：词粒度模型可以学习到更加稳定的词级别表示，特别是对于高频词和常见词，有更好的表示能力。
 - **缺点**：处理未登录词（OOV）：词粒度模型无法处理未登录词，遇到未登录词时需要采用特殊处理（如使用未登录词的特殊标记或直接忽略）。对于多音字等形态复杂的词汇，可能无法准确捕捉其细粒度的信息。
 
-#### **3.2 BERT的Encoder与Decoder掩码有什么区别？**
+### **3.2 BERT的Encoder与Decoder掩码有什么区别？**
 
 Encoder主要使用自注意力掩码和填充掩码，而Decoder除了自注意力掩码外，还需要使用编码器-解码器注意力掩码来避免未来位置信息的泄露。这些掩码操作保证了Transformer在处理自然语言序列时能够准确、有效地进行计算，从而获得更好的表现。
 
-#### **3.3 BERT用的是transformer里面的encoder还是decoder？**
+### **3.3 BERT用的是transformer里面的encoder还是decoder？**
 
 BERT使用的是Transformer中的**Encoder部分**，而不是Decoder部分。
 
@@ -147,17 +147,17 @@ Transformer模型由Encoder和Decoder两个部分组成。Encoder用于将输入
 
 在BERT模型中，只使用了Transformer的Encoder部分，并且对其进行了一些修改和自定义的预训练任务，而没有使用Transformer的Decoder部分。
 
-#### **3.4 为什么BERT选择mask掉15%这个比例的词，可以是其他的比例吗？**
+### **3.4 为什么BERT选择mask掉15%这个比例的词，可以是其他的比例吗？**
 
 BERT选择mask掉15%的词是一种经验性的选择，是原论文中的一种选择，并没有一个固定的理论依据，实际中当然可以尝试不同的比例，15%的比例是由BERT的作者在原始论文中提出，并在实验中发现对于BERT的训练效果是有效的。
 
-#### **3.5 为什么BERT在第一句前会加一个\[CLS] 标志?**
+### **3.5 为什么BERT在第一句前会加一个\[CLS] 标志?**
 
 BERT在第一句前会加一个 \[CLS] 标志，**最后一层该位对应向量可以作为整句话的语义表示，从而用于下游的分类任务等**。为什么选它？因为与文本中已有的其它词相比，这个无明显语义信息的符号会更“公平”地融合文本中各个词的语义信息，从而更好的表示整句话的语义。
 
 具体来说，self-attention是用文本中的其它词来增强目标词的语义表示，但是目标词本身的语义还是会占主要部分的，因此，经过BERT的12层，每次词的embedding融合了所有词的信息，可以去更好的表示自己的语义。而 \[CLS] 位本身没有语义，经过12层，得到的是attention后所有词的加权平均，相比其他正常词，可以更好的表征句子语义。
 
-#### **3.6 BERT非线性的来源在哪里？**
+### **3.6 BERT非线性的来源在哪里？**
 
 主要来自两个地方：**前馈层的gelu激活函数**和**self-attention**。
 
@@ -165,7 +165,7 @@ BERT在第一句前会加一个 \[CLS] 标志，**最后一层该位对应向量
 
 **self-attention layer**：在自注意力层中，查询（Query）、键（Key）、值（Value）之间的点积得分会经过softmax操作，形成注意力权重，然后将这些权重与值向量相乘得到每个位置的自注意输出。这个过程中涉及了softmax操作，使得模型的计算是非线性的。
 
-#### **3.7 BERT训练时使用的学习率 warm-up 策略是怎样的？为什么要这么做？**
+### **3.7 BERT训练时使用的学习率 warm-up 策略是怎样的？为什么要这么做？**
 
 在BERT的训练中，使用了学习率warm-up策略，这是**为了在训练的早期阶段增加学习率，以提高训练的稳定性和加快模型收敛**。
 
@@ -174,7 +174,7 @@ BERT在第一句前会加一个 \[CLS] 标志，**最后一层该位对应向量
 - **不稳定性**：在训练初期，由于模型参数的随机初始化以及模型的复杂性，模型可能处于一个较不稳定的状态。此时使用较大的学习率可能导致模型的参数变动太大，使得模型很难收敛，学习率warm-up可以在这个阶段将学习率保持较小，提高模型训练的稳定性。
 - **避免过拟合**：BERT模型往往需要较长的训练时间来获得高质量的表示。如果在训练的早期阶段就使用较大的学习率，可能会导致模型在训练初期就过度拟合训练数据，降低模型的泛化能力。通过学习率warm-up，在训练初期使用较小的学习率，可以避免过度拟合，等模型逐渐稳定后再使用较大的学习率进行更快的收敛。
 
-#### **3.8 在BERT应用中，如何解决长文本问题？**
+### **3.8 在BERT应用中，如何解决长文本问题？**
 
 在BERT应用中，处理长文本问题有以下几种常见的解决方案：
 
@@ -184,9 +184,9 @@ BERT在第一句前会加一个 \[CLS] 标志，**最后一层该位对应向量
 - **Longformer、BigBird等模型**：使用专门针对长文本的模型，如Longformer和BigBird。这些模型采用了不同的注意力机制，以处理超长序列，并且通常在处理长文本时具有更高的效率。
 - **Document-Level Model**：将文本看作是一个整体，而不是将其拆分成句子或段落，然后输入BERT模型进行处理。这样的文档级模型可以更好地捕捉整个文档的上下文信息，但需要更多的计算资源。
 
-### 4.MHA & MQA & MGA
+## 4.MHA & MQA & GQA
 
-#### （1）MHA
+### （1）MHA
 
 从多头注意力的结构图中，貌似这个所谓的**多个头就是指多组线性变换层**，其实并不是，只有使用了一组线性变化层，即三个变换张量对Q，K，V分别进行线性变换，**这些变换不会改变原有张量的尺寸**，因此每个变换矩阵都是方阵，得到输出结果后，多头的作用才开始显现，每个头开始从词义层面分割输出的张量，也就是每个头都想获得一组Q，K，V进行注意力机制的计算，但是句子中的每个词的表示只获得一部分，也就是只分割了最后一维的词嵌入向量。这就是所谓的多头，将每个头的获得的输入送到注意力机制中, 就形成多头注意力机制.
 
@@ -212,9 +212,9 @@ $$
 
 - 一个 dot product 的注意力里面，没有什么可以学的参数。具体函数就是内积，为了识别不一样的模式，希望有不一样的计算相似度的办法。加性 attention 有一个权重可学，也许能学到一些内容。
 - multi-head attention 给 h 次机会去学习 不一样的投影的方法，使得在投影进去的度量空间里面能够去匹配不同模式需要的一些相似函数，然后把 h 个 heads 拼接起来，最后再做一次投影。
-- 每一个头 hi 是把 Q,K,V 通过 可以学习的 Wq, Wk, Wv 投影到 dv 上，再通过注意力函数，得到 headi。&#x20;
+- 每一个头 hi 是把 Q,K,V 通过 可以学习的 Wq, Wk, Wv 投影到 dv 上，再通过注意力函数，得到 headi。
 
-#### （2）MQA
+### （2）MQA
 
 MQA（Multi Query Attention）最早是出现在2019年谷歌的一篇论文 《Fast Transformer Decoding: One Write-Head is All You Need》。
 
@@ -233,7 +233,7 @@ MQA的思想其实比较简单，MQA 与 MHA 不同的是，**MQA 让所有的�
 
 ![](image/image_J3LRkcY0rt.png)
 
-#### （3）GQA
+### （3）GQA
 
 Google 在 2023 年发表的一篇 [《GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints》](https://arxiv.org/pdf/2305.13245.pdf "《GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints》")的论文
 
@@ -251,7 +251,7 @@ GQA-N 是指具有 N 组的 Grouped Query Attention。GQA-1具有单个组，因
 
 ![](image/image_mcpY8Z5rJG.png)
 
-#### （4）总结
+### （4）总结
 
 MHA（Multi-head Attention）是标准的多头注意力机制，h个Query、Key 和 Value 矩阵。
 
@@ -266,16 +266,16 @@ GQA介于MHA和MQA之间。GQA 综合 MHA 和 MQA ，既不损失太多性能，
 **参考链接**
 [理解Attention:从起源到MHA,MQA和GQA](https://zhuanlan.zhihu.com/p/686149289)
 
-### 5.Flash Attention&#x20;
+## 5.Flash Attention
 
 论文名称：[FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness](https://arxiv.org/abs/2205.14135 "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness")
 
-Flash Attention的主要目的是加速和节省内存，主要贡献包括： &#x20;
+Flash Attention的主要目的是加速和节省内存，主要贡献包括： 
 
-- 计算softmax时候不需要全量input数据，可以分段计算； &#x20;
+- 计算softmax时候不需要全量input数据，可以分段计算； 
 - 反向传播的时候，不存储attention matrix ($N^2$的矩阵)，而是只存储softmax归一化的系数。
 
-#### 5.1 动机
+### 5.1 动机
 
 不同硬件模块之间的带宽和存储空间有明显差异，例如下图中左边的三角图，最顶端的是GPU种的 `SRAM`，它的容量非常小但是带宽非常大，以A100 GPU为例，它有108个流式多核处理器，每个处理器上的片上SRAM大小只有192KB，因此A100总共的SRAM大小是$192KB\times 108 = 20MB$，但是其吞吐量能高达19TB/s。而A100 GPU `HBM`（High Bandwidth Memory也就是我们常说的GPU显存大小）大小在40GB\~80GB左右，但是带宽只与1.5TB/s。
 
@@ -287,13 +287,13 @@ Flash Attention的主要目的是加速和节省内存，主要贡献包括： &
 
 FlashAttention的主要动机就是**希望把SRAM利用起来**，但是难点就在于SRAM太小了，一个普通的矩阵乘法都放不下去。FlashAttention的解决思路就是将计算模块进行分解，拆成一个个小的计算任务。
 
-#### 5.2 Softmax Tiling
+### 5.2 Softmax Tiling
 
 在介绍具体的计算算法前，我们首先需要了解一下Softmax Tiling。
 
 **（1）数值稳定**
 
-&#x20;Softmax包含指数函数，所以为了避免数值溢出问题，可以将每个元素都减去最大值，如下图示，最后计算结果和原来的Softmax是一致的。
+Softmax包含指数函数，所以为了避免数值溢出问题，可以将每个元素都减去最大值，如下图示，最后计算结果和原来的Softmax是一致的。
 
 $$
 m(x):=\max _{i} ~ x_{i} \\ 
@@ -314,7 +314,7 @@ $$
 \begin{aligned} m^{m\left(x^{(1)}\right)-m(x)} f\left(x^{(1)}\right) & =e^{m\left(x^{(1)}\right)-m(x)}\left[e^{x_{1}^{(1)}-m\left(x^{(1)}\right)}, \ldots, e^{x_{B}^{(1)}-m\left(x^{(1)}\right)}\right] \\ & =\left[e^{x_{1}^{(1)}-m(x)}, \ldots, e^{x_{B}^{(1)}-m(x)}\right]\end{aligned}
 $$
 
-#### 5.3 算法流程
+### 5.3 算法流程
 
 FlashAttention旨在避免从 HBM（High Bandwidth Memory）中读取和写入注意力矩阵，这需要做到：
 
@@ -329,9 +329,9 @@ FlashAttention算法流程如下图所示：
 
 ![](image/image_bck1Jw3P5A.png)
 
-### 6.Transformer常见问题
+## 6.Transformer常见问题
 
-#### 6.1 Transformer和RNN
+### 6.1 Transformer和RNN
 
 最简单情况：没有残差连接、没有 layernorm、 attention 单头、没有投影。看和 RNN 区别
 
@@ -351,7 +351,7 @@ RNN 跟 transformer **同：语义空间的转换 + 关注点**
 
 **关注点**：怎么有效的去使用序列的信息。
 
-#### 6.2 一些细节
+### 6.2 一些细节
 
 **Transformer为何使用多头注意力机制？**（为什么不使用一个头）
 
@@ -457,7 +457,7 @@ $$
 
 - BERT和transformer的目标不一致，bert是语言的预训练模型，需要充分考虑上下文的关系，而transformer主要考虑句子中第i个元素与前i-1个元素的关系。
 
-### 7. Sliding Window Attention (SWA)
+## 7. Sliding Window Attention (SWA)
 
 > 来源 Mistral 7B https://arxiv.org/pdf/2310.06825
 
@@ -496,7 +496,7 @@ SWA实际上是一种sparse attention，而sparse attention也有许多工作做
 
 [稀疏注意力计算:sliding window attention](https://zhuanlan.zhihu.com/p/687349083)
 
-### 8. Paged Attention (vllm)
+## 8. Paged Attention (vllm)
 
 > vllm paper: https://arxiv.org/abs/2309.06180
 
@@ -783,7 +783,9 @@ vLLM怎么做：
 **参考链接**
 [图解大模型计算加速系列之：vLLM核心技术PagedAttention原理](https://blog.csdn.net/qq_27590277/article/details/137262274)
 
-### 9.多头潜在注意力机制 (MLA) （Deepseek v3）
+## 9.多头潜在注意力机制 (MLA) （Deepseek v3）
+
+> [缓存与效果的极限拉扯：从MHA、MQA、GQA到MLA](https://spaces.ac.cn/archives/10091)
 
 ![1757679957560](image/attention/1757679957560.png)
 ![1757679134493](image/attention/1757679134493.png)
@@ -828,7 +830,7 @@ Multi-head Latent Attention (MLA) 是一种将 多头注意力机制 与 潜在�
 
 [MLA——一文通透DeepSeek V2中的多头潜在注意力MLA](https://blog.csdn.net/v_JULY_v/article/details/141535986)
 
-### 10. 长上下文
+## 10. 长上下文
 
 小模型（比如2B、7B）可以硬刚，支持到16k或者32k长度，但是对于更大的长度（200k），或者更大的模型（34B、70B+），这么做就性价比就比较低了。
 
