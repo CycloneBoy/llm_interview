@@ -191,6 +191,11 @@ $$
 - RoPE通过绝对位置编码的方式实现相对位置编码，综合了绝对位置编码和相对位置编码的优点。
 - 主要就是**对attention中的q, k向量注入了绝对位置信息，然后用更新的q,k向量做attention中的内积就会引入相对位置信息了**。
 
+### 1.5 参考链接
+
+- [让研究人员绞尽脑汁的Transformer位置编码](https://kexue.fm/archives/8130)
+- [Transformer升级之路：2、博采众长的旋转式位置编码](https://kexue.fm/archives/8265)
+
 ## 2.旋转位置编码 RoPE篇
 
 RoPE旋转位置编码是苏神提出来的一种相对位置编码，之前主要用在自研的语言模型roformer上，后续谷歌Palm和meta的LLaMA等都是采用此位置编码，通过复数形式来对于三角式绝对位置编码的改进。有一些同学可能没看懂苏神的公式推导，我这里来帮助大家推理理解下公式。
@@ -297,6 +302,11 @@ $$
 \left(\boldsymbol{W}_{m} \boldsymbol{q}\right)^{\top}\left(\boldsymbol{W}_{n} \boldsymbol{k}\right)=\operatorname{Re}\left[\sum_{i=0}^{d / 2-1} \boldsymbol{q}_{[2 i: 2 i+1]} \boldsymbol{k}_{[2 i: 2 i+1]}^{*} e^{\mathrm{i}(m-n) \theta_{i}}\right]
 $$
 
+参考链接
+
+[Transformer升级之路：2、博采众长的旋转式位置编码](https://kexue.fm/archives/8265)
+
+
 ## 3.ALiBi (Attention with Linear Biases)篇
 
 用处：可解决训练推理文本长度不一致，如论文中训练采用1024，推理采用2048。
@@ -396,3 +406,246 @@ Alibi 相当于在k和q向量内积上加入分数上的偏置，来体现出来
 - [开源LLM大模型位置编码探索](https://zhuanlan.zhihu.com/p/631003833 "开源LLM大模型位置编码探索")
 
 
+## 5.Yarn
+
+> [从ROPE到Yarn, 一条通用公式速通长文本大模型中的位置编码](https://zhuanlan.zhihu.com/p/15311461897)
+
+从Qwen2.5到Deepseek V3, Yarn几乎已经是各家LLM做长文本外推的标配组件 （相比Pretrain微乎其微的资源消耗获得至少16倍的长度外推）。 然而我最近在和很多做LLM的朋友交流发现大家对长文本的认知还停留在ROPE的时代。本文尝试用一条通用公式，带你以最简洁的方式彻底理解ROPE及其演化的变种逻辑，梳理以下长文本外推的方法本质：
+
+ROPE
+Position Interpolation
+NTK-Aware Interpolation
+Dyanmic NTK Interpolation
+NTK-by-parts Interpolation
+Yarn
+后续ROPE的各类变体会不断更新记录在本文，欢迎点赞关注追踪最新进展。
+
+### 5.1 位置编码的通用公式
+
+![1757918131851](image/positional_encoding/1757918131851.png)
+![1757918145170](image/positional_encoding/1757918145170.png)
+
+### 5.2 ROPE：一切的起点
+在Transformer模型中，位置编码是连接输入序列与模型结构的重要桥梁。Rotary Position Embedding (ROPE) 是一种基于旋转变换的相对位置编码方法，它以极其优雅的方式将位置索引转化为模型内部的旋转信息。其核心数学公式如下：
+
+ROPE的定义可以直接映射到通用公式：
+
+![1757918216322](image/positional_encoding/1757918216322.png)
+![1757918232539](image/positional_encoding/1757918232539.png)
+![1757918245707](image/positional_encoding/1757918245707.png)
+![1757918258767](image/positional_encoding/1757918258767.png)
+
+### 5.3 Position Interpolation (PI)：均匀拉伸的位置插值，也叫线性内插
+![1757918277713](image/positional_encoding/1757918277713.png)
+
+### 5.4 NTK-Aware Interpolation：非均匀频率缩放，介于直接外推和线性内插之间的平滑方法
+![1757918299889](image/positional_encoding/1757918299889.png)
+
+### 5.5 Dynamic Scaling：动态适配插值比例， NTK-Aware Interpolation升级版
+
+![1757918337828](image/positional_encoding/1757918337828.png)
+
+### 5.6 NTK-by-parts Interpolation：基于波长局部分段插值
+
+![1757918394718](image/positional_encoding/1757918394718.png)
+
+核心优势： 与之前的PI和“NTK-aware”插值方法相比，“NTK-by-parts”方法在处理RoPE维度时有更强的针对性。PI方法对所有维度同等插值，容易丢失高频信息；“NTK-aware”方法虽然尝试通过改变频率缩放方式来缓解问题，但会导致某些维度的外推，产生“越界”值，影响模型性能。而“NTK-by-parts”方法通过根据波长区分维度并采用不同插值策略，能够更好地平衡高频信息保留和位置关系理解，实验中可以表现的更好。关于参数取值逻辑可以参考DeepSeekV3：α=1 和 β=32。
+
+### 5.7 Yarn (NTK-aware + NTK-by-parts + Dynamic NTK)
+
+![1757918022801](image/positional_encoding/1757918022801.png)
+
+### 5.8 实验
+最后放几张Yarn中的实验结果感受一下, Yarn无论在资源利用率还是128K长度性能上都超过其他PI, NTK 类方法，
+无怪Yarn成为目前Long Context LLM的标配。
+
+![1757918450136](image/positional_encoding/1757918450136.png)
+![1757918458746](image/positional_encoding/1757918458746.png)
+
+### 参考资料：
+
+[从ROPE到Yarn, 一条通用公式速通长文本大模型中的位置编码](https://zhuanlan.zhihu.com/p/15311461897)
+
+## 6. 长上下文
+
+长文本建模一直是LLM中的一个难点，从训练数据，模型架构到工程优化都有非常多的细节可以探讨。
+
+本文聚焦于探讨近期几篇热点的工作中关于长文本的一些细节:
+
+How to Train Long-Context Language Models Efficiently (Danqi Chen)
+Qwen2.5
+DeepSeekV3
+先列一下已知的实验配置：
+
+Terminology:
+
+RF: RoPE frequency base
+
+DCA: Dual Chunk Attention
+
+ProLong-8B:
+
+Keys Techniques: ROPE + DM
+
+Extension Phase1: 64k training for 4B tokens (RF 8000k)
+
+Extension Phase2: 512k training for 4B tokens (RF 128000k)
+
+Deepseek V3:
+
+Keys Techniques: Yarn
+
+Pretraining Phase: 4k context length training
+
+Extension Phase1: 32k for 1000 steps, batch size 1920
+
+Extension Phase2: 128k for 1000 steps, batch size 480
+
+Qwen 2.5:
+
+Technique: Yarn + DCA
+
+Pretraining Phase: 4k context length training
+
+Extension Phase1: 32k (RF: 500k)
+
+下面展开讲讲几个细节：
+
+### 6.1 Scaling ROPE Frequency Base （对长文本外推方法不熟悉的朋友可以移步 从ROPE到Yarn, 一条通用公式速通长文本大模型中的位置编码）
+From artificial needles to real haystacks: Improving retrieval capabilities in llms by finetuning on synthetic data中的一个发现是无论在continue train还是inference的时候增加RoPE frequency base可以都提升长文本性能。ProLong在scale到64K的时候中尝试了和LLAMA3相同的500k效果显著下降。一个基本的直觉是随着Frequency Base应该要随着context length增加。因为context length越大，距离远的token之间的attention只有在旋转角度更小的时候，也就是Frequency Base越大的时候，才能越平滑。但具体的映射关系笔者暂时没查阅到现有的工作做过分析。
+
+![1757918669034](image/positional_encoding/1757918669034.png)
+
+### 6.2 Continue Train阶段长短文本数据混合，SFT阶段是否继续混合？
+目前明确的是：在预训练阶段长文本和短文本的数据混合必然有收益,比例在40%-60%之间。 ProLong-8B: 将长文本与短文本按照60%对40%的比例混合使用性能最佳。 Deepseek V3： 并没有明确展开，但大概率也是混合了。 Qwen2.5：明确指出其训练数据中40%达到当前窗口最大长度，60%为短文本.
+
+然而在Prolong中的一个发现是SFT阶段混入合成的长文本反而导致效差
+
+![1757918684565](image/positional_encoding/1757918684565.png)
+
+这里Synthetic Data列表式混入的长文本UltraChat数据集的比例，可以看到，混入的越多，效果越差。
+
+这个结论非常反直觉，所以笔者又对比了下Qwen2.5的SFT数据，Qwen通过给定长文数据反向合成queries生成的长文本数据集同样和其他短文本混合最终的结果并没有造成长文本能力下降。笔者猜测是Synthetic data就像打补丁，不同的合成方式弥补了LLM不同方向的能力，并不能用长文短文来一概而论。
+
+### 6.3 DCA（Training-Free Context Scaling of Large Language Models）
+
+很早就看过阿里的这篇文章，想法非常巧妙，但之前对于实验的结论半信半疑，因为大部分实验结果都是基于PPL。DCA对于下游SFT的任务影响完全未知，这次看Qwen也应用了这个，希望能看到后续更多的评测吧把。
+
+![1757918701448](image/positional_encoding/1757918701448.png)
+
+### 6.4 长文本LLM测评
+这点上非常支持Prolong的结论，NIAH捞针测试和perplexity已经远不足以衡量现有大模型的能力。needle-in-a-haystack极其容易饱和，而perplexity又和很多下游任务表现不一致。
+
+Deepseek分别在DROP、FRAMES 和 LongBench v2上衡量。
+
+Prolong基于HELMET评测 （包含Recall, RAG, Reranking, ICL,QA, Summarization等多项指标）
+
+Qwen基于RULER, LongBench-Chat等数据集评测。
+
+
+总体长文本效果上看 671B的DeepSeek V3略胜一筹。
+
+### 6.5 LLM系列-如何做好长文本大模型训练
+> [LLM系列-如何做好长文本大模型训练？](https://zhuanlan.zhihu.com/p/11467583463)
+
+长文本能力是当前大模型领域的前沿热点。我们可以观察到市面上常见大模型的支持长度，如GPT-4支持32K tokens，Llama 3.1支持128K tokens，而ProLong甚至能支持到512K tokens。这些技术的背后，数据质量、位置编码和工程优化扮演了关键角色。如何设计并训练一个真正高效的长文本大模型？ 笔者将结合自己的一些经验和最近的几篇Long Context Paper来聊聊这个话题。
+
+TL; DR
+
+首先先分享一些笔者在实践中学到的关于训好一个长文本大模型的理解：
+
+1.数据质量与短长数据比例的平衡至关重要。
+
+2.位置编码机制（如RoPE、ALiBi等）直接影响长文本模型的推理能力。
+
+3.超过评估长度的训练能够显著提升性能。
+
+4.业务层面要长文本能力是一项复杂的系统工程问题：当前实现十万tokens的长文本推理，prefilling速度容忍度30秒内主要依赖于高效的系统优化，瓶颈多在KV cache和softmax操作上。
+
+#### 6.5.1 长文本大模型建模的难点
+1.1 模型能力的瓶颈
+当前主流大模型如GPT-4、Llama3.1和Claude-Next支持的上下文窗口长度大多在8K到128K之间。然而，延长上下文窗口面临如下挑战：
+
+注意力机制计算复杂度：标准自注意力的计算复杂度是
+，对于长文本训练成本极高。
+位置编码失效：传统的位置编码（如绝对位置编码或RoPE）在长文本情况下表现不佳。
+训练数据质量：长文本数据（如书籍、代码库）需要平衡高质量短数据的加入，否则可能导致模型过拟合长文本任务，牺牲泛化能力。
+1.2 测试与评估难点
+长文本模型评估不能仅依赖PPL（困惑度）或"needle-in-a-haystack"（NIAH）测试。这些方法过于简单，无法充分反映实际任务中的模型表现。
+
+更先进的评估基准如HELMET可以提供多任务评估，例如：
+
+- 召回任务：从随机的JSON键值对中找到目标值。
+- 文档重排序：对混乱的文档列表进行排序。
+- 长文档摘要：从法律或书籍中生成简洁摘要。
+
+1.3 工程优化瓶颈
+长文本建模对内存和计算资源需求极高，尤其在序列长度达到128K或更高时，内存带宽和计算吞吐成为主要瓶颈。已经有研究发现，Softmax占比会随着上下文长度的增加而显著提升，导致推理延迟。
+
+#### 6.5.2 长文本大模型建模的解决思路
+2.1 训练方式
+训练上下文长度超过评估长度：例如，训练时使用512K的上下文窗口长度，即使评估任务只有128K，也能显著提升表现。
+阶段式训练：先用短上下文（如64K）训练初始模型，再切换到长上下文（如512K）继续训练。这种方式能有效减少计算成本，同时保证长文本任务性能。
+2.2 模型架构
+2.2.1 位置编码改进
+在处理长文本任务时，位置编码是提升模型性能的关键之一。传统的 Transformer 模型由于位置编码的限制，在扩展上下文长度时表现会受限。近年来，研究者提出了多种改进方法，包括 Rotary Position Embedding (RoPE) 及其变种、CoPE 等，这些方法通过优化位置编码有效突破了模型对长文本的处理能力限制。以下我们详细介绍这些方法及其变种：
+
+Rotary Position Embedding (RoPE)
+RoPE 的核心思想是通过旋转矩阵将绝对位置编码转化为相对位置编码，同时在自注意力机制中引入显式的相对位置依赖关系。其实现方式是将上下文表示向量与旋转矩阵相乘，从而达到嵌入相对位置的目的。具体数学公式如下：
+![1757920655354](image/positional_encoding/1757920655354.png)
+
+
+RoPE 的设计优点在于：
+
+自然地引入相对位置编码，使得远距离 token 之间的注意力权重随距离增加逐渐衰减；
+相比直接嵌入，旋转矩阵的计算效率更高，可扩展性更强。
+RoPE 的变种：Linear、NTK 与 YaRN
+为了进一步提升 RoPE 的长文本处理能力，研究者提出了以下变种：
+
+Linear-RoPE
+![1757920711299](image/positional_encoding/1757920711299.png)
+![1757920729918](image/positional_encoding/1757920729918.png)
+
+2.3 Yet Another RoPE extensioN (YaRN)
+RoPE 本质：RoPE 使用旋转的位置编码，它将一个标量的位置 (m) 转化为复数空间的旋转操作，用于编码序列中每个位置的信息。
+问题：如果直接将 RoPE 的频率线性扩展，模型会丢失对 高频信息 和 局部关系 的捕捉能力，这会导致长序列表现下降。
+YaRN 在现有插值方法的基础上， 针对不同频率的维度分别处理，避免高频信息丢失和局部关系的混淆。同时引入了一种动态缩放机制，使得模型在推理阶段能够根据当前序列长度动态调整插值参数，进一步提高泛化能力。实际的论文推导写的比较复杂，以下我摘取一些核心逻辑简要说一下：
+
+NTK-aware 插值：
+问题：盲目地以相同的比例扩展所有频率会削弱高频信息的作用。
+解决：对低频维度（长周期）插值更多，对高频维度（短周期）插值更少。通过调整频率的缩放基准 (b)，使得频率在低频部分得到更大的变化。
+NTK-by-parts 插值：
+问题：低频和高频部分应该有不同的处理方式。
+解决：引入一个阈值机制，根据频率的相对重要性，选择是否插值，或仅插值低频部分。这种方法避免了高频的过度插值。
+动态缩放（Dynamic Scaling）：
+问题：固定的插值比例可能导致短序列和长序列上的性能不均衡。
+解决：在推理阶段动态调整插值比例，确保模型在任意长度的序列上都能适配。
+最终改进（YaRN 方法）：
+在插值时加入了注意力温度 (t)，通过缩放注意力权重的计算公式，使得插值的效果更加平滑。
+最终公式（关键点是动态调整频率和注意力温度）：
+![1757920747632](image/positional_encoding/1757920747632.png)
+
+这个公式的意义是：通过对频率和注意力的共同调整，模型能够在更长的上下文中保持对位置关系的良好建模能力。
+通过引入动态调整的频率，该方法在扩展上下文时具有更好的灵活性与稳定性。
+
+CoPE (Contextual Positional Encoding)
+CoPE 则是另一种创新的方向编码方法，传统PE方法在处理长文本或需要抽象语义单位（如句子或段落）的位置编码时表现不佳。CoPE通过让位置编码依赖于上下文（context），使模型能够在更高抽象层级进行定位，如句子或特定词的位置。这种方法尤其在诸如计数、选择性复制和推理任务中表现突出。
+
+直观的理解来说，CoPE通过一个门控机制，动态地决定哪些Token需要被“计入”相对位置计算。例如：
+
+若只需定位句子间隔符号，则仅对句子分隔符（如句号）赋予权重。
+通过这种方式，模型可以根据上下文动态地计算Token的“相对位置”，而不仅仅依赖固定的Token计数。
+引用文献
+[1] The What, Why, and How of Context Length Extension Techniques in Large Language Models--A Detailed Survey
+
+[2] YaRN: Efficient Context Window Extension of Large Language Models
+
+[3] Contextual Position Encoding: Learning to Count What’s Important
+
+[4] How to Train Long-Context Language Models (Effectively)
+
+
+### 参考资料：
+
+[从Qwen2.5到DeepSeekV3，看近期Long Context LLM的进展](https://zhuanlan.zhihu.com/p/15353030367)
+[LLM系列-如何做好长文本大模型训练？](https://zhuanlan.zhihu.com/p/11467583463)

@@ -24,18 +24,6 @@ Paged Attention
 
 ### [位置编码](/大模型基础知识/positional_encoding.md)
 
-## 1.SinCos
-
-## 2.Alibi
-
-## 3.SinCos
-
-## 4.rotary
-
-## 5.长度外推
-
-## 6.Yarn
-
 SinCos
 
 rotary
@@ -63,7 +51,6 @@ WordPiece
 ### Deepseek
 
 ## 提示工程
-
 
 Zero-Shot
 
