@@ -37,3 +37,23 @@ Group-wise Precision Tuning Quantization (GPTQ
 Activation-aware Weight Quantization (AWQ)
 
 Half-Quadratic Quantization (HQQ)
+
+
+## LLM推理优化技术-概述
+https://github.com/liguodongiot/llm-action
+
+大模型推理优化技术-KV Cache
+大模型推理服务调度优化技术-Continuous batching
+大模型低显存推理优化-Offload技术
+大模型推理优化技术-KV Cache量化
+大模型推理优化技术-张量并行
+大模型推理服务调度优化技术-Chunked Prefill
+大模型推理优化技术-KV Cache优化方法综述
+大模型吞吐优化技术-多LoRA推理服务
+大模型推理服务调度优化技术-公平性调度
+大模型访存优化技术-FlashAttention
+大模型显存优化技术-PagedAttention
+大模型解码优化-Speculative Decoding及其变体
+大模型推理优化-结构化文本生成
+Flash Decoding
+FlashDecoding++
