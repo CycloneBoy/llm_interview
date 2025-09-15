@@ -26,13 +26,15 @@ Paged Attention
 
 SinCos
 
-rotary
+Rope
 
 Alibi
 
 长度外推
 
 Yarn
+
+长上下文
 
 ### tokenize
 

@@ -9,7 +9,7 @@
 
 ## 在线阅读
 
-在线阅读链接：[LLMs Interview Note](https://cycloneboy.github.io/llm_interview/)
+在线阅读链接：[llm_interview](https://cycloneboy.github.io/llm_interview/)
 
 
 ## 注意：
@@ -40,6 +40,14 @@
         * [5.Yarn](/大模型基础知识/positional_encoding.md?id=_5yarn)
         * [6. 长上下文](/大模型基础知识/positional_encoding.md?id=_6-长上下文)
 * [大模型微调](/大模型微调/)
+    * [有监督微调](/大模型微调/有监督微调.md)
+        * [1.预训练](/大模型微调/有监督微调.md?id=_1预训练)
+        * [2. 微调](/大模型微调/有监督微调.md?id=_2-微调)
+        * [3.prompting](/大模型微调/有监督微调.md?id=_3prompting)
+        * [4. adapter-tuning](/大模型微调/有监督微调.md?id=_4-adapter-tuning)
+        * [5.lora](/大模型微调/有监督微调.md?id=_5lora)
+        * [6.总结](/大模型微调/有监督微调.md?id=_6总结)
+    * [强化学习微调](/大模型微调/强化学习微调.md)
 * [分布式训练](/分布式训练/)
 * [强化学习](/强化学习/)
 * [大模型推理](/大模型推理/)
