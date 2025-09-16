@@ -24,9 +24,9 @@ UniPELT
 
 **RHLF**
 
-**PPO**
+[**PPO**](/大模型微调/ppo.md)
 
-**DPO**
+[**DPO**](/大模型微调/ppo.md)
 
 **GRPO**
 
