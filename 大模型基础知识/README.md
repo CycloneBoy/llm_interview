@@ -63,3 +63,5 @@ Chain-of-Thought (CoT)
 Tree-of-Thoughts (ToT) Prompting
 
 Automatic Chain-of-Thought (Auto-CoT) Prompting
+
+## [混合专家模型 (MoE)](/大模型基础知识/moe.md)

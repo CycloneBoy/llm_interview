@@ -39,6 +39,7 @@
         * [4.长度外推问题篇](/大模型基础知识/positional_encoding.md?id=_4长度外推问题篇)
         * [5.Yarn](/大模型基础知识/positional_encoding.md?id=_5yarn)
         * [6. 长上下文](/大模型基础知识/positional_encoding.md?id=_6-长上下文)
+    * [混合专家模型 (MoE)](/大模型基础知识/moe.md)
 * [大模型微调](/大模型微调/)
     * [有监督微调](/大模型微调/有监督微调.md)
         * [1.预训练](/大模型微调/有监督微调.md?id=_1预训练)

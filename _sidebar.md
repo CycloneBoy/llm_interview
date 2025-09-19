@@ -2,6 +2,7 @@
 * [大模型基础知识](/大模型基础知识/)
     * [attention](/大模型基础知识/attention.md )
     * [positional_encoding](/大模型基础知识/positional_encoding.md)
+    * [混合专家模型 (MoE)](/大模型基础知识/moe.md)
 * [大模型微调](/大模型微调/)
     * [有监督微调](/大模型微调/有监督微调.md)
     * [强化学习微调](/大模型微调/强化学习微调.md)
