@@ -1,8 +1,7 @@
-[toc]
 
-# LLM应用RAG
+# LLM应用
 
-## RAG
+## [RAG](/大模型应用/检索增强RAG.md)
 
 ## Embedding
 
@@ -10,5 +9,6 @@
 
 Milvus
 
-## 检索
+## [Agent](/大模型应用/智能体Agent.md)
 
+## [Text-to-SQL](/大模型应用/Text2SQL.md)
