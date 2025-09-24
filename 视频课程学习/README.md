@@ -16,3 +16,19 @@
 - [CS231N-2025-youtube](https://www.youtube.com/watch?v=2fq9wYslV0A&list=PLoROMvodv4rOmsNzYBMe0gJY2XS8AQg16)
 - [CS231N-2025-bilibili](https://www.bilibili.com/video/BV1b1agz5ERC/?spm_id_from=333.337.search-card.all.click&vd_source=e93a4a5bbafd55034ada9970aedf668e)
 
+
+## [Agent](/视频课程学习/llm_agent_2024.md)
+
+###  CS294/194-196 Large Language Model Agents
+
+> [https://rdi.berkeley.edu/llm-agents/f24](https://rdi.berkeley.edu/llm-agents/f24)
+
+- [course-youtube](https://www.youtube.com/watch?v=QL-FS_Zcmyo&list=PLS01nW3RtgopsNLeM936V4TNSsvvVglLc&index=12)
+- [course-bilibili](https://www.bilibili.com/video/BV1wfWFzjEzH/?spm_id_from=333.337.search-card.all.click&vd_source=e93a4a5bbafd55034ada9970aedf668e)
+
+
+### CS294/194-280 Advanced Large Language Model Agents
+
+> [https://rdi.berkeley.edu/adv-llm-agents/sp25](https://rdi.berkeley.edu/adv-llm-agents/sp25)
+
+- [course-youtube](https://www.youtube.com/playlist?list=PLS01nW3RtgorL3AW8REU9nGkzhvtn6Egn)
