@@ -110,6 +110,8 @@
 
 > [course-youtube](https://www.youtube.com/playlist?list=PLS01nW3RtgorL3AW8REU9nGkzhvtn6Egn)
 
+> [course-bilibili](https://www.bilibili.com/video/BV1mkZiYAEYM/?spm_id_from=333.337.search-card.all.click&vd_source=e93a4a5bbafd55034ada9970aedf668e)
+
 
 - Inference-time techniques for reasoning
 - Post-training methods for reasoning

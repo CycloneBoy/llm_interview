@@ -9,6 +9,10 @@
 - [CS336-2025-youtube](https://www.youtube.com/watch?v=SQ3fZ1sAqXI&list=PLoROMvodv4rOY23Y0BoGoBGgQ1zmU_MT_)
 - [CS336-2025-bilibili](https://www.bilibili.com/video/BV1YKhhzBE1M/?spm_id_from=333.337.search-card.all.click&vd_source=e93a4a5bbafd55034ada9970aedf668e)
 
+### [Stanford CME295 Transformers & LLMs ]
+
+- [cme295-youtube](https://www.youtube.com/watch?v=Ub3GoFaUcds)
+
 ## CV
 
 ### [CS231N (Stanford CS231N Deep Learning for Computer Vision | Spring 2025)](/视频课程学习/cs231n_2025.md)

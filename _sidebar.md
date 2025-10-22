@@ -20,5 +20,6 @@
 * [大模型面试题](/大模型面试题)
 * [视频课程学习](/视频课程学习/)
     * [CS336: Language Modeling from Scratch](/视频课程学习/cs336_2025.md)
-    * [CS231n: Deep Learning for Computer Vision](/视频课程学习/cs231n_2025.md)(/视频课程学习/cs231n_2025.md)
+    * [CS231n: Deep Learning for Computer Vision](/视频课程学习/cs231n_2025.md)
     * [Large Language Model Agents](/视频课程学习/llm_agent_2024.md)
+    * [CME295: Transformers & LLMs](/视频课程学习/cme295_2025.md)
